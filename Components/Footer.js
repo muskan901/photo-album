@@ -1,37 +1,83 @@
 import React from "react";
-import { FaFacebookF } from "react-icons/fa";
+import { FaFacebookF, FaLinkedinIn, FaYoutube } from "react-icons/fa";
 import { BiLogoInstagramAlt } from "react-icons/bi";
-import { FaLinkedinIn } from "react-icons/fa";
-import { FaYoutube } from "react-icons/fa";
 
 function Footer() {
+  const footerStyle = {
+    backgroundColor: "black", 
+    color: "white",
+    marginTop: "8px",
+    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
+  };
+
+  const containerStyle = {
+    maxWidth: "1520px",
+    margin: "0 auto",
+  };
+
+  const inputStyle = {
+    padding: "8px",
+    width: "420px",
+    border: "1px solid #ccc",
+    borderRadius: "4px",
+    backgroundColor: "white", 
+    color: "white",
+  };
+
+  const buttonStyle = {
+    backgroundColor: "#6B7280", 
+    color: "white",
+    padding: "8px",
+    borderRadius: "4px",
+    border: "none",
+    cursor: "pointer",
+  };
+
+  const sectionStyle = {
+    display: "flex",
+    justifyContent: "space-between",
+    marginTop: "8px",
+  };
+
+  const boxStyle = {
+    width: "33%",
+    height: "100px",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    color: "white",
+  };
+
   return (
-    <footer className="bg-zinc-800 text-white mt-2 shadow-lg">
-      <div className="container mx-auto">
-        <h2 className="text-center text-3xl py-8">Keep up to date with us easily!</h2>
-        <div className="email-input text-center mb-14">
+    <footer style={footerStyle}>
+      <div style={containerStyle}>
+        <h2 style={{ textAlign: "center", fontSize: "2rem", padding: "28px 0px" }}>
+          Keep up to date with us easily!
+        </h2>
+        <div style={{ textAlign: "center", marginBottom: "24px" }}>
           <input
             type="email"
             id="email"
             name="email"
-            className="p-2 w-[420px]"
             placeholder="Your email address"
+            style={inputStyle}
             required
           />
-          <button className="bg-gray-500 text-white p-2">Subscribe</button>
+          <button style={buttonStyle}>Subscribe</button>
         </div>
-        <div className="flex justify-between mt-8">
-          <div className="w-1/3 h-[100px] bg-purple-500">
-            <p className="text-white text-center mt-7">Contact</p>
-            <p className="text-white text-center">About Us</p>
+        <div style={sectionStyle}>
+          <div style={{ ...boxStyle, backgroundColor: "#A855F7" }}>
+            <p style={{ margin: "0" }}>Contact</p>
+            <p style={{ margin: "0" }}>About Us</p>
           </div>
-          <div className="w-1/3 bg-fuchsia-400">
-            <p className="text-white text-center mt-7">Trending</p>
-            <p className="text-white text-center">FAQ</p>
+          <div style={{ ...boxStyle, backgroundColor: "#EC4899" }}>
+            <p style={{ margin: "0" }}>Trending</p>
+            <p style={{ margin: "0" }}>FAQ</p>
           </div>
-          <div className="w-1/3 bg-orange-300">
-            <p className="text-white text-center mt-7">Follow us on social media</p>
-            <div className="flex justify-center mt-1 space-x-4">
+          <div style={{ ...boxStyle, backgroundColor: "#FBBF24" }}>
+            <p style={{ margin: "0" }}>Follow us on social media</p>
+            <div style={{ display: "flex", justifyContent: "center", marginTop: "1px", gap: "8px" }}>
               <a href="https://facebook.com" target="_blank" rel="noopener noreferrer">
                 <FaFacebookF />
               </a>
