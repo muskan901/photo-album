@@ -3,38 +3,60 @@ import Image from "next/image";
 import Link from "next/link";
 
 const Main = () => {
+  const containerStyle = {
+    height: "630px",
+    margin: "20px",
+    marginTop: "0px",
+    position: "relative",
+  };
+
+  const textContainerStyle = {
+    height: "calc(100% - 5px)",
+    width: "100%",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    color: "black",
+    position: "relative",
+    zIndex: 10,
+    textAlign: "center",
+  };
+
+  const buttonStyle = {
+    marginTop: "8px",
+    marginBottom: "4px",
+    backgroundColor: "#F97316", // orange-400
+    padding: "15px 20px",
+    borderRadius: "8px",
+    color: "white",
+    fontSize: "1.25rem", // text-xl
+    fontWeight: "bold",
+    border: "none",
+    cursor: "pointer",
+  };
+
   return (
     <>
-      <div
-        className="bg-container"
-        style={{
-          height: "630px",
-          margin: "20px",
-          marginTop: "0px",
-          position: "relative",
-        }}
-      >
+      <div style={containerStyle}>
         <Image
           src="/bg.png"
           alt="Background Image"
           layout="fill"
-          objectFit="fill"
-          className="bg-image"
+          objectFit="cover"
           style={{ borderRadius: "20px" }}
         />
-        <div
-          className="text-black flex justify-center items-center relative z-10"
-          style={{ height: "calc(100% - 5px)", width: "100%" }}
-        >
-          <div className="text-center mr-10">
-            <h2 className="text-4xl font-bold">
+        <div style={textContainerStyle}>
+          <div>
+            <h2 style={{ fontSize: "2.5rem", fontWeight: "bold" }}>
               Cherish yesterday, dream tomorrow, live today.
             </h2>
-            <h3 className="text-2xl mt-4">Every picture tells us a story.</h3>
+            <h3 style={{ fontSize: "1.5rem", marginTop: "16px" }}>
+              Every picture tells us a story.
+            </h3>
             <Link href="/Add">
-            <button className="mt-8 mb-4 bg-orange-400 px-5 py-3 rounded text-white text-xl font-bold">
-              <h3>MAKE IT</h3>
-            </button>
+              <button style={buttonStyle}>
+                MAKE IT
+              </button>
             </Link>
           </div>
         </div>
