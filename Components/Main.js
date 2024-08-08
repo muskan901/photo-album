@@ -1,5 +1,6 @@
 import React from "react";
 import Image from "next/image";
+import Link from "next/link";
 
 const Main = () => {
   return (
@@ -30,9 +31,11 @@ const Main = () => {
               Cherish yesterday, dream tomorrow, live today.
             </h2>
             <h3 className="text-2xl mt-4">Every picture tells us a story.</h3>
+            <Link href="/Add">
             <button className="mt-8 mb-4 bg-orange-400 px-5 py-3 rounded text-white text-xl font-bold">
               <h3>MAKE IT</h3>
             </button>
+            </Link>
           </div>
         </div>
       </div>
