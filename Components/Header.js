@@ -1,92 +1,247 @@
-import React, { useState, useEffect } from 'react';
-import Link from 'next/link';
+import React, { useState } from "react";
+import Link from "next/link";
+import {
+  FaSearch,
+  FaPlus,
+  FaUser,
+  FaBars,
+  FaHome,
+  FaFolder,
+  FaStar,
+  FaBell,
+  FaCog,
+  FaSignOutAlt,
+  FaChevronDown,
+} from "react-icons/fa";
 
-const Header = () => {
-  const [isDarkTheme, setIsDarkTheme] = useState(false);
+const Header = ({ menuVisible, setMenuVisible, onFormSubmit }) => { // Ensure onFormSubmit is included in props
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [formData, setFormData] = useState({
+    category: "",
+    folderName: "",
+    description: ""
+  });
 
-  useEffect(() => {
-    // Load theme from localStorage
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme) {
-      const isDark = savedTheme === 'dark';
-      setIsDarkTheme(isDark);
-      applyThemeStyles(isDark);
+  const handleMenuClick = () => {
+    setMenuVisible((prevVisible) => !prevVisible);
+  };
+
+  const handleAddFolderClick = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value
+    }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (typeof onFormSubmit === "function") { // Check if onFormSubmit is a function
+      onFormSubmit(formData);
+    } else {
+      console.error("onFormSubmit is not a function");
     }
-  }, []);
-
-  useEffect(() => {
-    // Save theme to localStorage and apply theme styles
-    localStorage.setItem('theme', isDarkTheme ? 'dark' : 'light');
-    applyThemeStyles(isDarkTheme);
-  }, [isDarkTheme]);
-
-  const applyThemeStyles = (isDark) => {
-    document.body.style.backgroundColor = isDark ? '#333' : '#fff';
-    document.body.style.color = isDark ? '#fff' : '#000';
-  };
-
-  const handleThemeToggle = () => {
-    setIsDarkTheme(prevTheme => !prevTheme);
-  };
-
-  const headerStyles = {
-    color: isDarkTheme ? '#fff' : '#000',
-    padding: '0 1rem',
-    height: '3.5rem',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-    fontWeight: 'bold',
-  };
-
-  const linkStyles = {
-    color: isDarkTheme ? '#fff' : '#000',
-    textDecoration: 'none',
-    fontWeight: 'bold',
-    fontSize: '1.25rem',
-    margin: '0 1rem',
-  };
-
-  const buttonStyles = {
-    padding: '0.5rem 1rem',
-    borderRadius: '10px',
-    cursor: 'pointer',
-    border: 'none',
-    fontWeight: 'bold',
-    color: isDarkTheme ? '#fff' : '#000',
-    backgroundColor: isDarkTheme ? '#666' : '#ddd',
-  };
-
-  const signInButtonStyles = {
-    backgroundColor: '#ff8c00',
-    color: '#fff',
-    padding: '0.5rem 1.25rem',
-    borderRadius: '10px',
-    border: 'none',
-    cursor: 'pointer',
-    fontWeight: 'bold',
+    handleCloseModal();
   };
 
   return (
-    <header style={headerStyles}>
-      <div style={{ display: 'flex', flexGrow: 1, justifyContent: 'center' }}>
-        <div style={{ display: 'flex', gap: '2rem', fontSize: '1.25rem' }}>
-          <Link href="/" style={linkStyles}>Home</Link>
-          <Link href="/Add" style={linkStyles}>Add</Link>
-          <Link href="/View" style={linkStyles}>View</Link>
-          <Link href="/About" style={linkStyles}>About</Link>
-          <Link href="/Contact" style={linkStyles}>Contact</Link>
+    <header className="sticky top-0 flex items-center justify-between p-4 h-14 bg-white text-black z-10 shadow-md">
+      <div className="flex items-center">
+        <button
+          className="text-xl text-black focus:outline-none"
+          onClick={handleMenuClick}
+        >
+          <FaBars />
+        </button>
+        <div
+          className={`absolute top-14 left-0 w-64 h-[95vh] bg-white text-black p-4 ${
+            menuVisible ? "block" : "hidden"
+          } flex flex-col`}
+        >
+          <div className="flex flex-col flex-grow">
+            <Link href="/">
+              <div className="flex items-center gap-2 mb-4 cursor-pointer hover:bg-orange-700 p-2 rounded">
+                <FaHome />
+                <span>Home</span>
+              </div>
+            </Link>
+            <Link href="/Folder">
+              <div className="flex items-center gap-2 mb-4 cursor-pointer hover:bg-orange-700 p-2 rounded">
+                <FaFolder />
+                <span>Folder</span>
+              </div>
+            </Link>
+            <Link href="/Profile">
+              <div className="flex items-center gap-2 mb-4 cursor-pointer hover:bg-orange-700 p-2 rounded">
+                <FaStar />
+                <span>Favourite</span>
+              </div>
+            </Link>
+            <Link href="/Profile">
+              <div className="flex items-center gap-2 mb-4 cursor-pointer hover:bg-orange-700 p-2 rounded">
+                <FaBell />
+                <span>Notification</span>
+              </div>
+            </Link>
+          </div>
+          {/* Horizontal Divider */}
+          <div className="w-full h-px bg-black mt-[5rem]" />
+          {/* Bottom Section */}
+          <div className="flex flex-col mt-auto">
+            <Link href="/Profile">
+              <div className="flex items-center gap-2 mb-2 cursor-pointer hover:bg-orange-700 p-2 rounded">
+                <FaCog />
+                <span>Settings</span>
+              </div>
+            </Link>
+            <Link href="/Profile">
+              <div className="flex items-center gap-2 mb-2 cursor-pointer hover:bg-orange-700 p-2 rounded">
+                <FaSignOutAlt />
+                <span>Logout</span>
+              </div>
+            </Link>
+          </div>
         </div>
       </div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-        <button onClick={handleThemeToggle} style={buttonStyles}>
-          {isDarkTheme ? 'Light Theme' : 'Dark Theme'}
+      <div
+        className="flex items-center gap-[38rem] transition-transform"
+        style={{
+          marginLeft: menuVisible ? "16rem" : "0",
+          transition: "margin-left 0.3s ease",
+        }}
+      >
+        <button
+          className="flex items-center gap-2 px-4 py-2 rounded-full font-bold bg-gray-300 text-black transition-transform"
+          style={{ width: "350px" }}
+        >
+          <FaSearch />
+          Search
         </button>
-        <Link href="/SignIn">
-          <button style={signInButtonStyles}>Sign In</button>
-        </Link>
+        <button
+          onClick={handleAddFolderClick}
+          className="flex items-center gap-2 px-4 py-2 bg-orange-700 text-white rounded-full font-bold"
+        >
+          Add Folder
+          <FaPlus />
+        </button>
       </div>
+      <div className="flex items-center">
+        <Link href="/Profile">
+          <div className="flex items-center justify-center w-9 h-9 rounded-full bg-gray-300 text-black">
+            <FaUser />
+          </div>
+        </Link>
+        <button className="text-xl text-black focus:outline-none ml-4">
+          <FaChevronDown />
+        </button>
+      </div>
+
+      {/* Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-20">
+          <div className="bg-white p-6 rounded-lg shadow-lg max-w-lg w-full">
+            <h2 className="text-xl font-semibold mb-1">Create Folder</h2>
+            {/* Horizontal Divider */}
+            <div className="w-full h-px bg-gray-300 mb-4" />
+            <form onSubmit={handleSubmit}>
+              <div className="mb-4">
+                <label className="block text-gray-700 mb-2">Category</label>
+                <div className="flex space-x-4 overflow-x-auto mb-4">
+                  <label className="flex items-center">
+                    <input
+                      type="radio"
+                      name="category"
+                      value="family"
+                      checked={formData.category === "family"}
+                      onChange={handleChange}
+                      className="mr-2"
+                    />
+                    <span>Family</span>
+                  </label>
+                  <label className="flex items-center">
+                    <input
+                      type="radio"
+                      name="category"
+                      value="work"
+                      checked={formData.category === "work"}
+                      onChange={handleChange}
+                      className="mr-2"
+                    />
+                    <span>Work</span>
+                  </label>
+                  <label className="flex items-center">
+                    <input
+                      type="radio"
+                      name="category"
+                      value="travel"
+                      checked={formData.category === "travel"}
+                      onChange={handleChange}
+                      className="mr-2"
+                    />
+                    <span>Travel</span>
+                  </label>
+                  <label className="flex items-center">
+                    <input
+                      type="radio"
+                      name="category"
+                      value="other"
+                      checked={formData.category === "other"}
+                      onChange={handleChange}
+                      className="mr-2"
+                    />
+                    <span>Other</span>
+                  </label>
+                </div>
+              </div>
+              {/* Folder Details */}
+              <div className="mb-4">
+                <label className="block text-gray-700 mb-2">Folder Name</label>
+                <input
+                  type="text"
+                  name="folderName"
+                  placeholder="Enter folder name"
+                  value={formData.folderName}
+                  onChange={handleChange}
+                  className="w-full p-2 border rounded"
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block text-gray-700 mb-2">Description</label>
+                <textarea
+                  name="description"
+                  placeholder="Enter description"
+                  value={formData.description}
+                  onChange={handleChange}
+                  className="w-full p-2 border rounded h-24"
+                />
+              </div>
+              <div className="flex justify-end space-x-2">
+                <button
+                  type="button"
+                  onClick={handleCloseModal}
+                  className="px-4 py-2 bg-gray-300 text-black rounded-full hover:bg-gray-400"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-orange-700 text-white rounded-full hover:bg-orange-800"
+                >
+                  Submit
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </header>
   );
 };
