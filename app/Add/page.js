@@ -291,27 +291,38 @@ const Add = () => {
       </div>
 
       {showModal && (
-        <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg">
-            <h2 className="text-xl font-semibold mb-4">Confirm Deletion</h2>
-            <p className="mb-4">Are you sure you want to delete the selected folders?</p>
-            <div className="flex justify-end gap-4">
-              <button
-                onClick={confirmDelete}
-                className="bg-red-600 text-white px-4 py-2 rounded-full font-bold hover:bg-red-700 transition-colors"
-              >
-                Confirm
-              </button>
-              <button
-                onClick={cancelDelete}
-                className="bg-gray-300 text-gray-700 px-4 py-2 rounded-full font-bold hover:bg-gray-400 transition-colors"
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+              <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-50">
+                <div className="bg-white border border-gray-300 rounded-lg shadow-lg p-6 w-1/3 max-w-lg text-center">
+                  <h3 className="text-lg font-semibold mb-4 flex items-center justify-center">
+                    Delete
+                  </h3>
+                  <div className="flex items-center justify-center flex-col">
+                    <img
+                      src="https://static.vecteezy.com/system/resources/previews/007/814/291/original/delete-concept-deleting-data-and-move-unnecessary-files-to-the-trash-bin-illustration-vector.jpg"
+                      alt="Delete"
+                      className="w-44 h-44 mb-4"
+                    />
+                  </div>
+                  <p className="mb-4">
+                    Are you sure you want to DELETE these items?
+                  </p>
+                  <div className="flex justify-center space-x-4">
+                    <button
+                      onClick={cancelDelete}
+                      className="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400 transition-colors"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={confirmDelete}
+                      className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition-colors"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
     </>
   );
 };
