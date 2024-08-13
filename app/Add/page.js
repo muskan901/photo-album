@@ -147,7 +147,6 @@ const Add = () => {
   };
 
   const handleFolderClick = (index) => {
-    // Redirect to the View page and pass the selected folder index
     router.push(`/View?index=${index}`);
   };
 
