@@ -1,18 +1,23 @@
-"use client"
-import React, { useState } from 'react'
-import Header from "@/Components/Header"
-import Main from "@/Components/Main"
-import Footer from "@/Components/Footer"
-// import Link from 'next/link'
+"use client";
+import React, { useState } from 'react';
+import Header from "@/Components/Header";
+import Main from "@/Components/Main";
+import Footer from "@/Components/Footer";
 
-function page() {
+function Page() {
+  const [menuVisible, setMenuVisible] = useState(false);
+
+  const handleFormSubmit = (formData: any) => {
+    console.log("Form submitted with data:", formData);
+  };
+
   return (
     <>
-    <Header/>
-    <Main />
-    <Footer/>
+      <Header menuVisible={menuVisible} setMenuVisible={setMenuVisible} onFormSubmit={handleFormSubmit} />
+      <Main menuVisible={menuVisible} />
+      <Footer />
     </>
-  )
+  );
 }
 
-export default page
+export default Page;
