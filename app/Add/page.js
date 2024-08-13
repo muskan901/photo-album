@@ -1,182 +1,320 @@
 "use client";
-import React, { useState, useEffect, Suspense } from "react";
-import dynamic from "next/dynamic";
-import { useForm } from "react-hook-form";
-import { useRouter, useSearchParams } from "next/navigation";
+import React, { useState, useEffect, useRef } from "react";
 import Header from "@/Components/Header";
-import Footer from "@/Components/Footer";
-import "react-quill/dist/quill.snow.css";
-import "../styles/quill.css";
+import { FaEdit, FaCopy, FaShare, FaTrash } from "react-icons/fa";
+import { useRouter } from "next/navigation";
 
-const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
+const Add = () => {
+  const [menuVisible, setMenuVisible] = useState(false);
+  const [folders, setFolders] = useState([]);
+  const [moreMenuVisible, setMoreMenuVisible] = useState(false);
+  const [selectionMode, setSelectionMode] = useState(false);
+  const [selectedFolders, setSelectedFolders] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+  const [editMode, setEditMode] = useState(false);
+  const [formData, setFormData] = useState({
+    folderName: "",
+    image: "",
+    category: "",
+    description: ""
+  });
+  const [imageFile, setImageFile] = useState(null);
 
-const modules = {
-  toolbar: [
-    [{ header: "1" }, { header: "2" }, { font: [] }],
-    [{ list: "ordered" }, { list: "bullet" }],
-    ["bold", "italic", "underline", "blockquote"],
-    [{ align: [] }],
-    [{ color: [] }, { background: [] }],
-    ["link", "image", "video"],
-    ["code-block"],
-    ["clean"],
-  ],
-  clipboard: {
-    matchVisual: false,
-  },
-};
-
-const AddPageContent = () => {
-  const { register, handleSubmit, reset, setValue } = useForm();
-  const [description, setDescription] = useState("");
-  const [image, setImage] = useState(null);
-  const [imageURL, setImageURL] = useState(null);
-  const [message, setMessage] = useState("");
+  const moreButtonRef = useRef(null);
+  const dropdownRef = useRef(null);
   const router = useRouter();
-  const searchParams = useSearchParams();
 
   useEffect(() => {
-    // Check if there is data to edit
-    const id = searchParams.get("id");
-    if (id) {
-      const storedData = JSON.parse(localStorage.getItem("formData")) || [];
-      const item = storedData.find((_, index) => index === parseInt(id));
-      if (item) {
-        setValue("title", item.title);
-        setDescription(item.description);
-        setImageURL(item.imageURL);
-      }
+    const savedFolders = localStorage.getItem("folders");
+    if (savedFolders) {
+      setFolders(JSON.parse(savedFolders));
     }
-  }, [searchParams, setValue]);
+  }, []);
 
-  const onSubmit = (data) => {
-    const newEntry = {
-      ...data,
-      description,
-      image,
-      imageURL,
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target) &&
+        !moreButtonRef.current.contains(event.target)
+      ) {
+        setMoreMenuVisible(false);
+      }
     };
 
-    const id = searchParams.get("id");
-    const storedData = JSON.parse(localStorage.getItem("formData")) || [];
+    document.addEventListener("mousedown", handleClickOutside);
 
-    if (id) {
-      // Update existing entry
-      storedData[parseInt(id)] = newEntry;
-    } else {
-      // Add new entry
-      storedData.push(newEntry);
-    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
-    localStorage.setItem("formData", JSON.stringify(storedData));
-    setMessage("Text Saved");
-    reset();
-    setDescription("");
-    setImage(null);
-    setImageURL(null);
-
-    // Navigate to the view page
-    router.push("/View");
+  const handleFormSubmit = (event) => {
+    event.preventDefault();
+    const newFolders = [...folders, formData];
+    setFolders(newFolders);
+    localStorage.setItem("folders", JSON.stringify(newFolders));
+    setFormData({
+      folderName: "",
+      image: "",
+      category: "",
+      description: ""
+    });
+    setImageFile(null);
   };
 
-  const handleImageUpload = (e) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImage(file);
-        setImageURL(reader.result); // Set base64 URL
-      };
-      reader.readAsDataURL(file);
+  const toggleMoreMenu = () => {
+    setMoreMenuVisible((prev) => !prev);
+  };
+
+  const handleDelete = () => {
+    setSelectionMode(true);
+    setEditMode(false);
+    setMoreMenuVisible(false);
+  };
+
+  const handleEdit = () => {
+    if (selectedFolders.length > 0) {
+      setEditMode(true);
+      setMoreMenuVisible(false);
+      setSelectionMode(false);
+    } else {
+      alert("Please select at least one folder to edit.");
     }
+  };
+
+  const handleCheckboxChange = (folderIndex) => {
+    setSelectedFolders((prev) =>
+      prev.includes(folderIndex)
+        ? prev.filter((index) => index !== folderIndex)
+        : [...prev, folderIndex]
+    );
+  };
+
+  const handleDeleteSelected = () => {
+    setShowModal(true);
+  };
+
+  const confirmDelete = () => {
+    const filteredFolders = folders.filter(
+      (_, index) => !selectedFolders.includes(index)
+    );
+    setFolders(filteredFolders);
+    localStorage.setItem("folders", JSON.stringify(filteredFolders));
+    setSelectionMode(false);
+    setSelectedFolders([]);
+    setShowModal(false);
+  };
+
+  const cancelDelete = () => {
+    setShowModal(false);
+  };
+
+  const handleEditFolder = () => {
+    const updatedFolders = folders.map((folder, index) =>
+      selectedFolders.includes(index)
+        ? {
+            ...folder,
+            ...formData,
+            image: imageFile ? URL.createObjectURL(imageFile) : folder.image,
+          }
+        : folder
+    );
+    setFolders(updatedFolders);
+    localStorage.setItem("folders", JSON.stringify(updatedFolders));
+    setEditMode(false);
+    setSelectedFolders([]);
+    setFormData({
+      folderName: "",
+      image: "",
+      category: "",
+      description: ""
+    });
+    setImageFile(null);
+  };
+
+  const handleEditClick = (index) => {
+    setFormData(folders[index]);
+    setImageFile(null);
+    setEditMode(true);
+  };
+
+  const handleImageUpload = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      setImageFile(file);
+    }
+  };
+
+  const handleFolderClick = (index) => {
+    // Redirect to the View page and pass the selected folder index
+    router.push(`/View?index=${index}`);
   };
 
   return (
-    <div className="h-full flex items-start justify-center pt-8">
-      <div className="bg-black p-5 rounded-lg shadow-lg max-w-5xl w-full mb-8">
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
-          <div>
-            <label className="block text-xl text-white mb-4">Title</label>
-            <input
-              type="text"
-              {...register("title", { required: true })}
-              placeholder="Enter title"
-              className="w-full p-2 text-white placeholder-white bg-black focus:outline-none focus:ring-2 focus:ring-emerald-400"
-              style={{
-                height: "70px",
-                borderWidth: "3px",
-                borderStyle: "solid",
-                borderImageSlice: 1,
-                borderImageSource:
-                  "linear-gradient(to right, #10B981, #EC4899, #8B5CF6)",
-              }}
-            />
-          </div>
+    <>
+      <Header
+        menuVisible={menuVisible}
+        setMenuVisible={setMenuVisible}
+        onFormSubmit={handleFormSubmit}
+      />
+      <div className="flex min-h-screen">
+        <div
+          className={`flex-1 transition-margin duration-300 ${
+            menuVisible ? "ml-64" : "ml-0"
+          } bg-gray-100`}
+        >
+          <div className="p-4">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-2xl font-semibold">Folders</h2>
+              <button
+                ref={moreButtonRef}
+                className="bg-orange-700 text-white px-4 py-2 rounded-full font-bold hover:bg-orange-800 transition-colors relative"
+                onClick={toggleMoreMenu}
+              >
+                More
+              </button>
+            </div>
 
-          <div>
-            <label className="block text-xl text-white mb-4">Image</label>
-            <input
-              type="file"
-              onChange={handleImageUpload}
-              className="w-full p-2 border border-gray-300 rounded text-white placeholder-white bg-black"
-              style={{
-                borderWidth: "3px",
-                borderStyle: "solid",
-                borderImageSlice: 1,
-                borderImageSource:
-                  "linear-gradient(to right, #10B981, #EC4899, #8B5CF6)",
-              }}
-            />
-            {imageURL && (
-              <div className="mt-4">
-                <img
-                  src={imageURL}
-                  alt="Preview"
-                  className="w-full rounded-lg"
-                />
+            {moreMenuVisible && (
+              <div
+                ref={dropdownRef}
+                className="absolute top-16 right-4 bg-white border border-gray-300 rounded-lg shadow-lg z-50"
+              >
+                <div className="p-4 flex flex-col space-y-2">
+                  <button
+                    className="flex items-center gap-2 p-2 hover:bg-gray-200 rounded"
+                    onClick={handleEdit}
+                  >
+                    <FaEdit className="text-gray-600" />
+                    <span>Edit</span>
+                  </button>
+                  <button className="flex items-center gap-2 p-2 hover:bg-gray-200 rounded">
+                    <FaCopy className="text-gray-600" />
+                    <span>Copy</span>
+                  </button>
+                  <button className="flex items-center gap-2 p-2 hover:bg-gray-200 rounded">
+                    <FaShare className="text-gray-600" />
+                    <span>Share</span>
+                  </button>
+                  <button
+                    className="flex items-center gap-2 p-2 hover:bg-gray-200 rounded"
+                    onClick={handleDelete}
+                  >
+                    <FaTrash className="text-gray-600" />
+                    <span>Delete</span>
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {selectionMode ? (
+              <div className="p-4">
+                <div className="flex items-center mb-4">
+                  <button
+                    onClick={handleDeleteSelected}
+                    className="bg-red-600 text-white px-4 py-2 rounded-full font-bold hover:bg-red-700 transition-colors"
+                  >
+                    Delete Selected
+                  </button>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                  {folders.map((folder, index) => (
+                    <div
+                      key={index}
+                      className="bg-white border border-gray-300 rounded-lg shadow-md flex flex-col relative max-w-sm cursor-pointer"
+                      onClick={() => handleCheckboxChange(index)}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={selectedFolders.includes(index)}
+                        onChange={() => handleCheckboxChange(index)}
+                        className="absolute top-2 right-2"
+                      />
+                      <div className="p-4 border-b border-gray-300 flex items-center">
+                        <h3 className="text-xl font-bold">{folder.folderName}</h3>
+                      </div>
+                      <div className="relative">
+                        {folder.image && (
+                          <img
+                            src={folder.image}
+                            alt="Folder"
+                            className="w-full h-auto rounded-t-lg border-b border-gray-300"
+                          />
+                        )}
+                        {folder.image && (
+                          <div className="absolute bottom-2 right-2 bg-orange-700 text-white text-center px-4 py-2 rounded-full max-w-[150px]">
+                            {folder.category}
+                          </div>
+                        )}
+                      </div>
+                      <div className="p-4 flex flex-col">
+                        <p className="text-gray-700">{folder.description}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                {folders.map((folder, index) => (
+                  <div
+                    key={index}
+                    className="bg-white border border-gray-300 rounded-lg shadow-md flex flex-col relative max-w-sm cursor-pointer"
+                    onClick={() => handleFolderClick(index)}
+                  >
+                    <div className="p-4 border-b border-gray-300 flex items-center">
+                      <h3 className="text-xl font-bold">{folder.folderName}</h3>
+                    </div>
+                    <div className="relative">
+                      {folder.image && (
+                        <img
+                          src={folder.image}
+                          alt="Folder"
+                          className="w-full h-auto rounded-t-lg border-b border-gray-300"
+                        />
+                      )}
+                      {folder.image && (
+                        <div className="absolute bottom-2 right-2 bg-orange-700 text-white text-center px-4 py-2 rounded-full max-w-[150px]">
+                          {folder.category}
+                        </div>
+                      )}
+                    </div>
+                    <div className="p-4 flex flex-col">
+                      <p className="text-gray-700">{folder.description}</p>
+                    </div>
+                  </div>
+                ))}
               </div>
             )}
           </div>
-
-          <div>
-            <label className="block text-xl text-white mb-4">Description</label>
-            <ReactQuill
-              value={description}
-              onChange={setDescription}
-              modules={modules}
-              className="bg-black text-white"
-              theme="snow"
-              style={{
-                borderWidth: "3px",
-                borderStyle: "solid",
-                borderImageSlice: 1,
-                borderImageSource:
-                  "linear-gradient(to right, #10B981, #EC4899, #8B5CF6)",
-              }}
-            />
-          </div>
-
-          <button
-            type="submit"
-            className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
-          >
-            Submit
-          </button>
-        </form>
-        {message && <p className="mt-4 text-green-500 text-xl">{message}</p>}
+        </div>
       </div>
-    </div>
+
+      {showModal && (
+        <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg">
+            <h2 className="text-xl font-semibold mb-4">Confirm Deletion</h2>
+            <p className="mb-4">Are you sure you want to delete the selected folders?</p>
+            <div className="flex justify-end gap-4">
+              <button
+                onClick={confirmDelete}
+                className="bg-red-600 text-white px-4 py-2 rounded-full font-bold hover:bg-red-700 transition-colors"
+              >
+                Confirm
+              </button>
+              <button
+                onClick={cancelDelete}
+                className="bg-gray-300 text-gray-700 px-4 py-2 rounded-full font-bold hover:bg-gray-400 transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 };
 
-const AddPage = () => (
-  <>
-    <Header />
-    <Suspense fallback={<div>Loading...</div>}>
-      <AddPageContent />
-    </Suspense>
-    <Footer />
-  </>
-);
-
-export default AddPage;
+export default Add;
