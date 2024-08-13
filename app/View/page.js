@@ -19,16 +19,14 @@ const View = () => {
     if (savedFolders) {
       const folders = JSON.parse(savedFolders);
       setFolder(folders[index]);
-      setEditedFolder(folders[index]); // Initialize editedFolder with the current folder
+      setEditedFolder(folders[index]); 
     }
   }, [router]);
 
-  // Handle edit button click
   const handleEditClick = () => {
     setIsModalOpen(true);
   };
 
-  // Handle save changes
   const handleSaveChanges = () => {
     const savedFolders = localStorage.getItem("folders");
     if (savedFolders) {
@@ -41,13 +39,11 @@ const View = () => {
     }
   };
 
-  // Handle modal input changes
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setEditedFolder({ ...editedFolder, [name]: value });
   };
 
-  // Handle image file upload
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
