@@ -31,3 +31,51 @@ body {
     text-wrap: balance;
   }
 } */
+
+/* Global styles */
+.pageBackground {
+  background-color: #f0f4f8; /* Light background color */
+  min-height: 100vh; /* Ensure the page covers the full height */
+}
+
+.card {
+  background-color: #ffffff;
+  padding: 16px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.folderName {
+  font-size: 1.25rem;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.folderImage {
+  width: 100%;
+  height: auto;
+  border-radius: 4px;
+  margin-bottom: 8px;
+}
+
+.cardDetails {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.category {
+  font-size: 0.875rem;
+  color: #888;
+}
+
+.description {
+  font-size: 0.875rem;
+  color: #333;
+  max-width: 70%; /* Ensure the description does not exceed card width */
+}
+
